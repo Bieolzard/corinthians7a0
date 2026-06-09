@@ -1,0 +1,17 @@
+export type SlotCampo =
+  | "GOL"
+  | "LD"
+  | "LE"
+  | "ZAG_E"
+  | "ZAG_D"
+  | "VOL"
+  | "MC_E"
+  | "MC_D"
+  | "MC"
+  | "MD"
+  | "ME"
+  | "PD"
+  | "PE"
+  | "CA"
+  | "CA_E"
+  | "CA_D";
