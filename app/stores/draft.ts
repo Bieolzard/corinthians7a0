@@ -9,12 +9,23 @@ import { simularPartida }
 import type { Jogador } from "~/types/jogador";
 import type { Elenco } from "~/types/elenco";
 import type { JogadorSelecionado } from "~/types/jogadorSelecionado";
+import { gerarPlacar }
+  from "~/composables/useMatchSimulation";
 
 export const useDraftStore = defineStore("draft", () => {
     type Formacao = keyof typeof formacoes;
 
 const formacao = ref<Formacao>("4-3-3");
+const resumoPartida = ref<{
+  golsTime: number;
+  golsAdversario: number;
 
+  eventos: {
+    minuto: number;
+    autor: string;
+    time: "corinthians" | "adversario";
+  }[];
+} | null>(null);
     const indicePosicaoAtual = ref(0);
 
    const jogadoresSelecionados = ref<
@@ -194,12 +205,14 @@ function jogarPartida() {
     return;
   }
 
-  const resultado = simularPartida(
-    overallTime.value,
-    adversarioAtual.value.overall
+  const partida = gerarPlacar(
+    jogadoresSelecionados.value,
+    adversarioAtual.value
   );
 
-  if (!resultado.venceu) {
+  resumoPartida.value = partida;
+
+  if (!partida.venceu) {
     faseAtual.value = "eliminado";
 
     resultadoUltimaPartida.value =
@@ -244,6 +257,8 @@ function definirFormacao(
   formacao.value = novaFormacao;
 }
 
+
+
     return {
         formacao,
 
@@ -267,7 +282,7 @@ function definirFormacao(
 
         selecionarJogador,
 
-        jogadoresDisponiveis,
+        jogadoresDisponiveis, resumoPartida,
         overallTime, definirFormacao,
         faseAtual, sortearAdversario, adversarioAtual, resultadoUltimaPartida, jogarPartida, avancarFase
     };

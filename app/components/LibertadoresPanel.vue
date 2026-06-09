@@ -48,4 +48,35 @@ const draft = useDraftStore();
       ❌ ELIMINADO
     </h1>
   </section>
+
+  <div
+  v-if="draft.resumoPartida"
+  class="resultado-card"
+>
+  <h3>
+    Corinthians
+    {{ draft.resumoPartida.golsTime }}
+
+    x
+
+    {{ draft.resumoPartida.golsAdversario }}
+
+    {{ draft.adversarioAtual?.nome }}
+  </h3>
+
+  <ul>
+    <li
+      v-for="evento in draft.resumoPartida.eventos"
+      :key="
+        evento.minuto +
+        evento.autor
+      "
+    >
+      ⚽
+      {{ evento.autor }}
+      -
+      {{ evento.minuto }}'
+    </li>
+  </ul>
+</div>
 </template>
