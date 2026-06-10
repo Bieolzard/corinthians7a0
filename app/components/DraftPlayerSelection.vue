@@ -27,7 +27,7 @@ const draft = useDraftStore();
       </span>
     </div>
 
-    <div class="current-position">
+    <!-- <div class="current-position">
       Vagas restantes:
       <strong>
         {{
@@ -36,7 +36,7 @@ const draft = useDraftStore();
           )
         }}
       </strong>
-    </div>
+    </div> -->
 
     <div class="players-list">
       <button

@@ -9,7 +9,7 @@ const posicoesCampo: Record<
     left: string;
   }
 > = {
-  GOL: { top: "88%", left: "50%" },
+  GOL: { top: "95%", left: "50%" },
 
   LD: { top: "72%", left: "78%" },
   LE: { top: "72%", left: "22%" },
@@ -70,9 +70,11 @@ CA_D: {
 
 <div class="circulo-centro" />
 
-<div class="area-superior" />
+<div class="area-superior"></div>
+<div class="pequena-area-superior"></div>
 
-<div class="area-inferior" />
+<div class="area-inferior"></div>
+<div class="pequena-area-inferior"></div>
     <div
       v-for="selecionado in draft.jogadoresSelecionados"
       :key="selecionado.jogador.id"
@@ -84,37 +86,40 @@ CA_D: {
     >
       <PlayerCard
   :nome="selecionado.jogador.nome"
-  :overall="selecionado.jogador.overall"
-  :ano="selecionado.jogador.temporada"
-  :posicao="selecionado.jogador.posicao"
 />
     </div>
   </div>
 </template>
 
 <style scoped>
+
 .campo {
   position: relative;
 
   width: 100%;
-  max-width: 700px;
+  max-width: 760px;
 
-  height: 700px;
+  height: 760px;
 
   margin: auto;
 
-  background:
-repeating-linear-gradient(
-  90deg,
-  #0d5a16,
-  #0d5a16 60px,
-  #116d1c 60px,
-  #116d1c 120px
-);
-overflow: hidden;
-border-radius: 20px;
+  overflow: hidden;
 
-  border: 4px solid white;
+  border-radius: 24px;
+
+  border: 2px solid rgba(255,255,255,.15);
+
+  background:
+    repeating-linear-gradient(
+      90deg,
+      #0b5715,
+      #0b5715 70px,
+      #0f691b 70px,
+      #0f691b 140px
+    );
+
+  box-shadow:
+    0 20px 50px rgba(0,0,0,.35);
 }
 
 .linha-centro {
@@ -128,7 +133,7 @@ border-radius: 20px;
 
   height: 2px;
 
-  background: rgba(255,255,255,.6);
+  background: rgba(255,255,255,.45);
 }
 
 .circulo-centro {
@@ -142,9 +147,9 @@ border-radius: 20px;
 
   height: 120px;
 
-  border: 2px solid rgba(255,255,255,.6);
-
   border-radius: 50%;
+
+  border: 2px solid rgba(255,255,255,.45);
 
   transform: translate(-50%, -50%);
 }
@@ -156,15 +161,14 @@ border-radius: 20px;
 
   left: 50%;
 
-  width: 260px;
+  width: 180px;
 
-  height: 120px;
+  height: 90px;
 
-  border: 2px solid rgba(255,255,255,.6);
+  border: 2px solid rgba(255,255,255,.45);
 
   transform: translateX(-50%);
 }
-
 .area-inferior {
   position: absolute;
 
@@ -172,11 +176,43 @@ border-radius: 20px;
 
   left: 50%;
 
-  width: 260px;
+  width: 180px;
 
-  height: 120px;
+  height: 90px;
 
-  border: 2px solid rgba(255,255,255,.6);
+  border: 2px solid rgba(255,255,255,.45);
+
+  transform: translateX(-50%);
+}
+
+.pequena-area-superior {
+  position: absolute;
+
+  top: 0;
+
+  left: 50%;
+
+  width: 90px;
+
+  height: 40px;
+
+  border: 2px solid rgba(255,255,255,.45);
+
+  transform: translateX(-50%);
+}
+
+.pequena-area-inferior {
+  position: absolute;
+
+  bottom: 0;
+
+  left: 50%;
+
+  width: 90px;
+
+  height: 40px;
+
+  border: 2px solid rgba(255,255,255,.45);
 
   transform: translateX(-50%);
 }
@@ -186,13 +222,11 @@ border-radius: 20px;
 
   transform: translate(-50%, -50%);
 
-  background: white;
+  display: flex;
 
-  padding: 8px;
+  justify-content: center;
 
-  border-radius: 8px;
-
-  font-size: 12px;
+  align-items: center;
 }
 
 

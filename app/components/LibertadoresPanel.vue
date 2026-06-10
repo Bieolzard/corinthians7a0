@@ -73,23 +73,31 @@ const draft = useDraftStore();
                 </span>
               </div>
             </div>
-            <div v-if="draft.eventoDestaque" class="broadcast-banner">
-              <div class="broadcast-live">AO VIVO</div>
+            <div
+  v-if="draft.ultimoEvento"
+  class="broadcast-banner"
+>
+  <div class="broadcast-live">
+    AO VIVO
+  </div>
 
-              <div class="broadcast-content">
-                <div class="broadcast-title">
-                  {{
-                    draft.eventoDestaque.time === "corinthians"
-                      ? "GOOOL DO CORINTHIANS"
-                      : "GOL DO ADVERSÁRIO"
-                  }}
-                </div>
+  <div class="broadcast-content">
+    <div class="broadcast-title">
+      {{
+        draft.ultimoEvento.time ===
+        "corinthians"
+          ? "GOOOL DO CORINTHIANS"
+          : "GOL DO ADVERSÁRIO"
+      }}
+    </div>
 
-                <div class="broadcast-description">
-                  {{ draft.eventoDestaque.descricao }}
-                </div>
-              </div>
-            </div>
+    <div class="broadcast-description">
+      {{
+        draft.ultimoEvento.descricao
+      }}
+    </div>
+  </div>
+</div>
 
             <div class="events">
               <div
@@ -110,105 +118,187 @@ const draft = useDraftStore();
               </div>
             </div>
 
-            <div
-              v-if="
-                draft.estadoPartida === 'simulando' &&
-                draft.eventosVisiveis.length
-              "
-              class="live-event"
-            ></div>
           </div>
         </template>
+
+        <!-- APITO FINAL -->
+<template
+  v-else-if="
+    draft.estadoPartida ===
+    'fim'
+  "
+>
+  <div class="match-screen final-whistle">
+    <div class="whistle-label">
+      APITO FINAL
+    </div>
+
+    <div class="whistle-score">
+      Corinthians
+      {{ draft.placarAtual.golsTime }}
+
+      ×
+
+      {{ draft.placarAtual.golsAdversario }}
+
+      {{ draft.adversarioAtual?.nome }}
+    </div>
+  </div>
+</template>
+
 
         <!-- RESULTADO -->
 
-        <template v-else-if="draft.estadoPartida === 'resultado'">
-          <div class="match-screen">
-            <div
-              v-if="
-                draft.resultadoUltimaPartida === 'Vitória' &&
-                draft.faseAtual !== 'final'
-              "
-              class="result"
-            >
-              <div class="result-line"></div>
+<template
+  v-else-if="
+    draft.estadoPartida ===
+    'resultado'
+  "
+>
+  <div class="match-screen">
+    <Transition
+      name="result-reveal"
+      appear
+    >
+      <div class="result-container">
 
-              <div class="result-title">CLASSIFICADO</div>
+        <!-- CLASSIFICADO -->
 
-              <div class="result-score">
-                Corinthians
-                {{ draft.resumoPartida?.golsTime }}
+        <div
+          v-if="
+            draft.resultadoUltimaPartida === 'Vitória' &&
+            draft.faseAtual !== 'final'
+          "
+          class="result"
+        >
+          <div class="result-line"></div>
 
-                ×
-
-                {{ draft.resumoPartida?.golsAdversario }}
-
-                {{ draft.resumoPartida?.adversario }}
-              </div>
-
-              <div class="result-subtitle">
-                {{ draft.proximaFaseLabel }}
-              </div>
-            </div>
-
-            <div
-              v-if="
-                draft.resultadoUltimaPartida === 'Vitória' &&
-                draft.faseAtual === 'final'
-              "
-              class="champion"
-            >
-              <div class="champion-title">CAMPEÃO DA LIBERTADORES</div>
-
-              <div class="champion-subtitle">
-                O Timão pintou a América de preto e branco.
-              </div>
-            </div>
-
-            <div
-              v-if="draft.resultadoUltimaPartida === 'Eliminado'"
-              class="result defeat"
-            >
-              <div class="result-line"></div>
-
-              <div class="result-title">ELIMINADO</div>
-
-              <div class="result-score">
-                Corinthians
-                {{ draft.resumoPartida?.golsTime }}
-
-                ×
-
-                {{ draft.resumoPartida?.golsAdversario }}
-
-                {{ draft.adversarioAtual?.nome }}
-              </div>
-
-              <div class="result-subtitle">Sua campanha chegou ao fim.</div>
-            </div>
-
-            <div class="actions">
-              <button
-                v-if="
-                  draft.resultadoUltimaPartida === 'Vitória' &&
-                  draft.faseAtual !== 'final'
-                "
-                class="continue-btn"
-                @click="draft.continuarCampanha()"
-              >
-                Continuar Campanha
-              </button>
-
-              <button
-                v-else
-                class="restart-btn"
-                @click="draft.reiniciarCampanha()"
-              >
-                Montar Novo Time
-              </button>
-            </div>
+          <div class="result-title">
+            CLASSIFICADO
           </div>
-        </template>
+
+          <div class="result-score">
+            Corinthians
+            {{ draft.resumoPartida?.golsTime }}
+
+            ×
+
+            {{ draft.resumoPartida?.golsAdversario }}
+
+            {{ draft.resumoPartida?.adversario }}
+          </div>
+
+          <div class="result-subtitle">
+            {{ draft.proximaFaseLabel }}
+          </div>
+        </div>
+
+        <!-- CAMPEÃO -->
+
+        <div
+          v-else-if="
+            draft.resultadoUltimaPartida === 'Vitória'
+          "
+          class="champion"
+        >
+          <div class="result-line"></div>
+
+          <div class="champion-title">
+            CAMPEÃO DA LIBERTADORES
+          </div>
+
+          <div class="champion-subtitle">
+            O Timão pintou a América de preto e branco.
+          </div>
+        </div>
+
+        <!-- ELIMINADO -->
+
+        <div
+  v-else-if="
+    draft.faseAtual === 'final'
+  "
+  class="result vice"
+>
+  <div class="result-line"></div>
+
+  <div class="result-title">
+    VICE-CAMPEÃO
+  </div>
+
+  <div class="result-score">
+    Corinthians
+    {{ draft.resumoPartida?.golsTime }}
+
+    ×
+
+    {{ draft.resumoPartida?.golsAdversario }}
+
+    {{ draft.resumoPartida?.adversario }}
+  </div>
+
+  <div class="result-subtitle">
+    A Glória Eterna escapou por pouco.
+  </div>
+</div>
+
+<div
+  v-else
+  class="result defeat"
+>
+  <div class="result-line"></div>
+
+  <div class="result-title">
+    ELIMINADO
+  </div>
+
+  <div class="result-score">
+    Corinthians
+    {{ draft.resumoPartida?.golsTime }}
+
+    ×
+
+    {{ draft.resumoPartida?.golsAdversario }}
+
+    {{ draft.resumoPartida?.adversario }}
+  </div>
+
+  <div class="result-subtitle">
+    Sua campanha chegou ao fim.
+  </div>
+</div>
+
+        <!-- AÇÕES -->
+
+        <div class="actions">
+          <button
+            v-if="
+              draft.resultadoUltimaPartida === 'Vitória' &&
+              draft.faseAtual !== 'final'
+            "
+            class="continue-btn"
+            @click="
+              draft.continuarCampanha()
+            "
+          >
+            Continuar Campanha
+          </button>
+
+          <button
+            v-else
+            class="restart-btn"
+            @click="
+              draft.reiniciarCampanha()
+            "
+          >
+            Montar Novo Time
+          </button>
+        </div>
+
+      </div>
+    </Transition>
+  </div>
+</template>
       </div>
     </Transition>
     <Transition name="goal">
@@ -781,6 +871,29 @@ const draft = useDraftStore();
   letter-spacing: 4px;
 
   text-transform: uppercase;
+  animation:
+  resultPop .8s ease;
+}
+
+@keyframes resultPop {
+  0% {
+    opacity: 0;
+
+    transform:
+      scale(.8);
+  }
+
+  60% {
+    transform:
+      scale(1.08);
+  }
+
+  100% {
+    opacity: 1;
+
+    transform:
+      scale(1);
+  }
 }
 
 .result-subtitle {
@@ -793,6 +906,26 @@ const draft = useDraftStore();
   letter-spacing: 2px;
 
   text-transform: uppercase;
+  opacity: 0;
+
+  animation:
+    fadeUp .8s ease .6s forwards;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+
+    transform:
+      translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+
+    transform:
+      translateY(0);
+  }
 }
 
 .champion {
@@ -827,6 +960,10 @@ const draft = useDraftStore();
   font-weight: 700;
 
   color: white;
+  opacity: 0;
+
+  animation:
+    fadeUp .8s ease .3s forwards;
 }
 
 .champion-subtitle {
@@ -996,5 +1133,85 @@ backdrop-filter: blur(6px);
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+.result-reveal-enter-active {
+  transition:
+    opacity .8s ease,
+    transform .8s ease;
+}
+
+.result-reveal-enter-from {
+  opacity: 0;
+
+  transform:
+    translateY(30px);
+}
+
+.final-whistle {
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 24px;
+
+  animation:
+    whistleReveal 1s ease;
+}
+
+.whistle-label {
+  font-size: 1rem;
+
+  letter-spacing: 4px;
+
+  text-transform: uppercase;
+
+  color: #999;
+}
+
+.whistle-score {
+  font-size: 4rem;
+
+  font-weight: 800;
+
+  color: white;
+}
+
+@keyframes whistleReveal {
+  from {
+    opacity: 0;
+
+    transform:
+      translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+
+    transform:
+      translateY(0);
+  }
+}
+
+.vice {
+  color: #d6d6d6;
+}
+
+.vice .result-title {
+  color: #c0c0c0;
+}
+
+.vice .result-line {
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      #c0c0c0,
+      transparent
+    );
 }
 </style>

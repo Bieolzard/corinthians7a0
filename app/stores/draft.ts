@@ -15,7 +15,7 @@ export const useDraftStore = defineStore("draft", () => {
   const poolJogadores = ref<Jogador[]>([]);
   const formacao = ref<Formacao>("4-3-3");
   const aguardandoContinuacao = ref(false);
-  const estadoPartida = ref<"idle" | "transicao" | "simulando" | "resultado">(
+  const estadoPartida = ref<"idle" | "transicao" | "fim" | "simulando" | "resultado">(
     "idle",
   );
   const resumoPartida = ref<{
@@ -24,12 +24,15 @@ export const useDraftStore = defineStore("draft", () => {
     golsAdversario: number;
     eventos: EventoPartida[];
   } | null>(null);
-  const animandoProximaFase = ref(false);
   const jogadoresSelecionados = ref<JogadorSelecionado[]>([]);
   const adversarioAtual = ref<Adversario | null>(null);
   //   const elencosUtilizados = ref<string[]>([]);
-
+const ultimoEvento =
+  ref<EventoPartida | null>(
+    null
+  );
   type FaseCampanha =
+    | "draft"
     | "oitavas"
     | "quartas"
     | "semi"
@@ -60,6 +63,7 @@ export const useDraftStore = defineStore("draft", () => {
       fase: FaseCampanha;
       adversario: string;
       placar: string;
+      venceu: boolean;
     }[]
   >([]);
 
@@ -80,6 +84,12 @@ export const useDraftStore = defineStore("draft", () => {
     resultadoUltimaPartida.value = null;
 
     eventosVisiveis.value = [];
+
+    ultimoEvento.value = null;
+
+  eventoDestaque.value = null;
+
+  estadoPartida.value = "idle";
 
     placarAtual.value = {
       golsTime: 0,
@@ -117,7 +127,7 @@ export const useDraftStore = defineStore("draft", () => {
     // limpa a partida anterior
 
     eventosVisiveis.value = [];
-
+ultimoEvento.value = null;
     placarAtual.value = {
       golsTime: 0,
       golsAdversario: 0,
@@ -225,6 +235,7 @@ export const useDraftStore = defineStore("draft", () => {
     golsAdversario: 0,
   });
   async function jogarPartida() {
+    
     estadoPartida.value = "simulando";
     simulandoPartida.value = true;
 
@@ -262,53 +273,69 @@ export const useDraftStore = defineStore("draft", () => {
       };
 
       campanha.value.push({
-        fase: faseAtual.value as FaseCampanha,
-
-        adversario: nomeAdversario,
-
-        placar: `${partida.golsTime} x ${partida.golsAdversario}`,
-      });
+  fase: faseAtual.value,
+  adversario: nomeAdversario,
+  placar: `${partida.golsTime} x ${partida.golsAdversario}`,
+  venceu: partida.venceu,
+});
 
       resultadoUltimaPartida.value = partida.venceu ? "Vitória" : "Eliminado";
 
       for (const evento of partida.eventos) {
-        await new Promise(
-          resolve =>
-            setTimeout(resolve, 1200)
-        );
+  await new Promise(
+    resolve =>
+      setTimeout(resolve, 1200)
+  );
 
-        eventosVisiveis.value.push(
-          evento
-        );
+  ultimoEvento.value =
+    evento;
 
-        if (
-          evento.time === "corinthians"
-        ) {
-          placarAtual.value.golsTime++;
-        } else {
-          placarAtual.value.golsAdversario++;
-        }
+  eventosVisiveis.value.push(
+    evento
+  );
 
-        if (
-          ehGolDecisivo(evento)
-        ) {
-          eventoDestaque.value =
-            evento;
+  if (
+    evento.time === "corinthians"
+  ) {
+    placarAtual.value.golsTime++;
+  } else {
+    placarAtual.value.golsAdversario++;
+  }
 
-          await new Promise(
-            resolve =>
-              setTimeout(resolve, 2500)
-          );
+  if (
+    ehGolDecisivo(evento)
+  ) {
+    eventoDestaque.value =
+      evento;
 
-          eventoDestaque.value =
-            null;
-        }
-      }
+    await new Promise(
+      resolve =>
+        setTimeout(resolve, 2500)
+    );
 
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+    eventoDestaque.value =
+      null;
+  }
+}
 
-      estadoPartida.value = "resultado";
-      aguardandoContinuacao.value = true;
+      await new Promise(
+        resolve =>
+          setTimeout(resolve, 1000)
+      );
+
+      estadoPartida.value =
+        "fim";
+
+      await new Promise(
+        resolve =>
+          setTimeout(resolve, 1500)
+      );
+
+      estadoPartida.value =
+        "resultado";
+
+      aguardandoContinuacao.value =
+        true;
     } finally {
       simulandoPartida.value = false;
     }
@@ -386,6 +413,7 @@ export const useDraftStore = defineStore("draft", () => {
     estadoPartida.value = "idle";
     eventoDestaque.value =
       null;
+    ultimoEvento.value = null;
   }
 
   function avancarFase() {
@@ -417,14 +445,6 @@ export const useDraftStore = defineStore("draft", () => {
       ),
     ];
 
-    console.log("=================================");
-
-    console.log("Vagas disponíveis:", vagasDisponiveis.value);
-
-    console.log("Posições necessárias:", posicoesNecessarias);
-
-    console.log("Pool restante:", poolJogadores.value.length);
-
     const garantidos: Jogador[] = [];
 
     let poolTemp = [...poolJogadores.value];
@@ -432,14 +452,6 @@ export const useDraftStore = defineStore("draft", () => {
     for (const posicao of posicoesNecessarias) {
       const candidatos = poolTemp.filter((jogador) =>
         jogador.posicoes.includes(posicao as Jogador["posicoes"][number]),
-      );
-
-      console.log(
-        `Candidatos para ${posicao}:`,
-        candidatos.map((j) => ({
-          nome: j.nome,
-          posicoes: j.posicoes,
-        })),
       );
 
       if (!candidatos.length) {
@@ -452,7 +464,6 @@ export const useDraftStore = defineStore("draft", () => {
         candidatos[Math.floor(Math.random() * candidatos.length)];
 
       if (jogadorSorteado) {
-        console.log(`Garantido para ${posicao}:`, jogadorSorteado.nome);
 
         garantidos.push(jogadorSorteado);
 
@@ -464,14 +475,6 @@ export const useDraftStore = defineStore("draft", () => {
       (jogador) => obterSlotsCompativeis(jogador).length > 0,
     );
 
-    console.log(
-      "Extras possíveis:",
-      candidatosExtras.map((j) => ({
-        nome: j.nome,
-        posicoes: j.posicoes,
-      })),
-    );
-
     const extras = candidatosExtras
       .sort(() => Math.random() - 0.5)
       .slice(0, Math.max(0, 11 - garantidos.length));
@@ -480,17 +483,6 @@ export const useDraftStore = defineStore("draft", () => {
       () => Math.random() - 0.5,
     );
 
-    console.log("Opções finais:");
-
-    console.table(
-      opcoesDraft.value.map((jogador) => ({
-        nome: jogador.nome,
-        posicoes: jogador.posicoes.join(", "),
-        overall: jogador.overall,
-      })),
-    );
-
-    console.log("=================================");
   }
 
   function definirFormacao(novaFormacao: keyof typeof formacoes) {
@@ -522,7 +514,6 @@ export const useDraftStore = defineStore("draft", () => {
     sortearAdversario,
     vagasDisponiveis,
     obterSlotsCompativeis,
-    animandoProximaFase,
     estadoPartida,
     draftFinalizado,
     placarAtual,
@@ -534,5 +525,6 @@ export const useDraftStore = defineStore("draft", () => {
     aguardandoContinuacao,
     avancarFase,
     continuarCampanha,
+    ultimoEvento
   };
 });
