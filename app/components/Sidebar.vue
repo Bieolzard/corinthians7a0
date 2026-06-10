@@ -8,7 +8,7 @@ const draft = useDraftStore();
     <h1>
       TIMÃO
       <br />
-      <span>IMPOSSÍVEL</span>
+      <span>7 A 0</span>
     </h1>
   </div>
 

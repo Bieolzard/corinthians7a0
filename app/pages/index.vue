@@ -7,6 +7,6 @@
 
 <!-- <CampaignHistory /> -->
 
-<MatchResultModal />
+<!-- <MatchResultModal /> -->
   </div>
 </template>

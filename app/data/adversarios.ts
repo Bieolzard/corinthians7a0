@@ -9,12 +9,12 @@ export const adversarios = {
     {
       id: "atletico_nacional_2016",
       nome: "Atlético Nacional 2016",
-      overall: 89,
+      overall: 12,
     },
     {
       id: "santos_2011",
       nome: "Santos 2011",
-      overall: 90,
+      overall: 12,
     },
   ],
 
@@ -22,7 +22,7 @@ export const adversarios = {
     {
       id: "river_2018",
       nome: "River Plate 2018",
-      overall: 91,
+      overall: 12,
     },
   ],
 
@@ -30,7 +30,7 @@ export const adversarios = {
     {
       id: "palmeiras_2021",
       nome: "Palmeiras 2021",
-      overall: 92,
+      overall: 12,
     },
   ],
 

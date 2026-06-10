@@ -1,165 +1,116 @@
-<script setup lang="ts">
+<!-- <script setup lang="ts">
 const draft = useDraftStore();
 </script>
 
 <template>
   <Teleport to="body">
-    <div
-      v-if="draft.modalResultadoAberta"
-      class="overlay"
-    >
+    <div v-if="draft.modalResultadoAberta" class="overlay">
       <div class="modal">
-
         <div class="header">
-          <span class="competition">
-             Libertadores
-          </span>
+          <span class="competition"> Libertadores </span>
 
-          <h2>
-            Resultado da Partida
-          </h2>
+          <h2>Resultado da Partida</h2>
         </div>
 
         <div class="scoreboard">
-            
           <div class="team">
-  <span class="team-name">
-    Corinthians
-  </span>
+            <span class="team-name"> Corinthians </span>
 
-  <span class="score">
-    {{ draft.placarAtual.golsTime }}
-  </span>
-</div>
+            <span class="score">
+              {{ draft.placarAtual.golsTime }}
+            </span>
+          </div>
 
-<div class="x">
-  X
-</div>
+          <div class="x">X</div>
 
-<div class="team">
-  <span class="team-name">
-    {{ draft.resumoPartida?.adversario }}
-  </span>
+          <div class="team">
+            <span class="team-name">
+              {{ draft.resumoPartida?.adversario }}
+            </span>
 
-  <span class="score">
-    {{ draft.placarAtual.golsAdversario }}
-  </span>
-</div>
+            <span class="score">
+              {{ draft.placarAtual.golsAdversario }}
+            </span>
+          </div>
         </div>
-        <div
-  v-if="!draft.aguardandoContinuacao"
-  class="simulating"
->
-  ⚽ Simulando partida...
-</div>
+        <div v-if="!draft.aguardandoContinuacao" class="simulating">
+          ⚽ Simulando partida...
+        </div>
 
         <div class="events">
           <div
             v-for="evento in draft.eventosVisiveis"
-            :key="
-              evento.minuto +
-              evento.autor
-            "
+            :key="evento.minuto + evento.autor"
             class="event"
             :class="evento.time"
           >
-            <span>
-              ⚽ {{ evento.autor }}
-            </span>
+            <span> ⚽ {{ evento.autor }} </span>
 
-            <span>
-              {{ evento.minuto }}'
-            </span>
+            <span> {{ evento.minuto }}' </span>
           </div>
         </div>
 
         <div
-  v-if="
-    draft.aguardandoContinuacao &&
-    draft.resultadoUltimaPartida ===
-    'Vitória' &&
-    draft.faseAtual !== 'final'
-  "
-  class="result"
->
-  <div class="result-title">
-    🏆 CLASSIFICADO
-  </div>
+          v-if="
+            draft.aguardandoContinuacao &&
+            draft.resultadoUltimaPartida === 'Vitória' &&
+            draft.faseAtual !== 'final'
+          "
+          class="result"
+        >
+          <div class="result-title">🏆 CLASSIFICADO</div>
 
-  <div class="result-subtitle">
-    Próxima fase:
-    {{ draft.proximaFaseLabel }}
-  </div>
-</div>
-
-<div
-  v-if="
-    draft.aguardandoContinuacao &&
-    draft.resultadoUltimaPartida ===
-    'Vitória' &&
-    draft.faseAtual === 'final'
-  "
-  class="champion"
->
-  <div class="champion-title">
-    🏆 CAMPEÃO DA LIBERTADORES 🏆
-  </div>
-
-  <div class="champion-subtitle">
-    O Timão pintou a américa de preto e branco.
-  </div>
-</div>
-
-<div
-  v-if="
-    draft.aguardandoContinuacao &&
-    draft.resultadoUltimaPartida ===
-    'Eliminado'
-  "
-  class="result defeat"
->
-  <div class="result-title">
-    💔 ELIMINADO
-  </div>
-
-  <div class="result-subtitle">
-    Sua campanha chegou ao fim.
-  </div>
-</div>
+          <div class="result-subtitle">
+            Próxima fase:
+            {{ draft.proximaFaseLabel }}
+          </div>
+        </div>
 
         <div
-  v-if="draft.aguardandoContinuacao"
-  class="actions"
->
-  <button
-  v-if="
-    draft.resultadoUltimaPartida ===
-    'Vitória' &&
-    draft.faseAtual !== 'final'
-  "
-  class="continue-btn"
-  @click="
-    draft.continuarCampanha()
-  "
->
-  Próxima Fase →
-</button>
+          v-if="
+            draft.aguardandoContinuacao &&
+            draft.resultadoUltimaPartida === 'Vitória' &&
+            draft.faseAtual === 'final'
+          "
+          class="champion"
+        >
+          <div class="champion-title">🏆 CAMPEÃO DA LIBERTADORES 🏆</div>
 
-<button
-  v-if="
-    draft.resultadoUltimaPartida ===
-    'Vitória' &&
-    draft.faseAtual === 'final'
-  "
-  class="restart-btn"
-  @click="
-    draft.reiniciarCampanha()
-  "
->
-  🏆 Novo Draft
-</button>
-</div>
+          <div class="champion-subtitle">
+            O Timão pintou a américa de preto e branco.
+          </div>
+        </div>
 
+        <div
+          v-if="
+            draft.aguardandoContinuacao &&
+            draft.resultadoUltimaPartida === 'Eliminado'
+          "
+          class="result defeat"
+        >
+          <div class="result-title">💔 ELIMINADO</div>
+
+          <div class="result-subtitle">
+            Sua campanha chegou ao fim. Monte outro Timão e tente novamente.
+          </div>
+        </div>
+
+        <div v-if="draft.aguardandoContinuacao" class="actions">
+          <button
+            v-if="
+              draft.resultadoUltimaPartida === 'Vitória' &&
+              draft.faseAtual !== 'final'
+            "
+            class="continue-btn"
+            @click="draft.continuarCampanha()"
+          >
+            Próxima Fase →
+          </button>
+
+          <button v-else class="restart-btn" @click="draft.reiniciarCampanha()">
+            🔄 Novo Draft
+          </button>
+        </div>
       </div>
     </div>
   </Teleport>
@@ -171,8 +122,7 @@ const draft = useDraftStore();
 
   inset: 0;
 
-  background:
-    rgba(0, 0, 0, .75);
+  background: rgba(0, 0, 0, 0.75);
 
   backdrop-filter: blur(6px);
 
@@ -214,7 +164,7 @@ const draft = useDraftStore();
 .competition {
   color: #c9a227;
 
-  font-size: .85rem;
+  font-size: 0.85rem;
 
   text-transform: uppercase;
 
@@ -322,16 +272,14 @@ const draft = useDraftStore();
 }
 
 .victory {
-  background:
-    rgba(0, 180, 0, .15);
+  background: rgba(0, 180, 0, 0.15);
 
   color: #4cd964;
 }
 
 .defeat {
-  background:
-    rgba(255, 0, 0, .15);
-    margin-bottom: 20px;
+  background: rgba(255, 0, 0, 0.15);
+  margin-bottom: 20px;
   color: #ff6b6b;
   border-radius: 12px;
 }
@@ -353,7 +301,7 @@ const draft = useDraftStore();
 
   cursor: pointer;
 
-  transition: .2s;
+  transition: 0.2s;
 }
 
 .continue-btn:hover {
@@ -361,13 +309,11 @@ const draft = useDraftStore();
 }
 
 .event.corinthians {
-  border-left:
-    4px solid #c9a227;
+  border-left: 4px solid #c9a227;
 }
 
 .event.adversario {
-  border-left:
-    4px solid #ff5f5f;
+  border-left: 4px solid #ff5f5f;
 }
 .simulating {
   text-align: center;
@@ -398,7 +344,7 @@ const draft = useDraftStore();
 
   cursor: pointer;
 
-  transition: .2s;
+  transition: 0.2s;
 }
 
 .restart-btn:hover {
@@ -406,4 +352,4 @@ const draft = useDraftStore();
 
   filter: brightness(1.1);
 }
-</style>
+</style> -->

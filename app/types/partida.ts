@@ -1,7 +1,20 @@
+export type TipoEventoPartida =
+  | "gol"
+  | "gol_adversario"
+  | "chance"
+  | "defesa"
+  | "erro";
+
 export interface EventoPartida {
   minuto: number;
+
+  tipo: TipoEventoPartida;
+
   autor: string;
+
   time: "corinthians" | "adversario";
+
+  descricao: string;
 }
 
 export interface ResumoPartida {
@@ -12,4 +25,8 @@ export interface ResumoPartida {
   golsAdversario: number;
 
   eventos: EventoPartida[];
+
+  melhorJogador?: string;
+
+  destaquePartida?: string;
 }
