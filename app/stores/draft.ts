@@ -1,22 +1,27 @@
 import { defineStore } from "pinia";
-import { elencos } from "~/data/elencos";
+import { jogadoresHistoricos } from "~/data/jogadoresHistoricos";
 import { formacoes } from "~/data/formacoes";
 import { adversarios, type Adversario } from "~/data/adversarios";
-import { simularPartida }
-  from "~/composables/useSimulador";
-  import type { SlotCampo } from "~/types/slot";
-
+import type { SlotCampo } from "~/types/slot";
 import type { Jogador } from "~/types/jogador";
-import type { Elenco } from "~/types/elenco";
 import type { JogadorSelecionado } from "~/types/jogadorSelecionado";
 import { gerarPlacar }
   from "~/composables/useMatchSimulation";
 
 export const useDraftStore = defineStore("draft", () => {
     type Formacao = keyof typeof formacoes;
-
-const formacao = ref<Formacao>("4-3-3");
-const resumoPartida = ref<{
+  const simulandoPartida = ref(false)
+  const opcoesDraft =
+  ref<Jogador[]>([]);
+  const poolJogadores =
+  ref<Jogador[]>([]);
+  const formacao = ref<Formacao>("4-3-3");
+  const modalResultadoAberta =
+    ref(false);
+  const aguardandoContinuacao =
+  ref(false);
+  const resumoPartida = ref<{
+  adversario: string;
   golsTime: number;
   golsAdversario: number;
 
@@ -26,59 +31,102 @@ const resumoPartida = ref<{
     time: "corinthians" | "adversario";
   }[];
 } | null>(null);
-    const indicePosicaoAtual = ref(0);
 
    const jogadoresSelecionados = ref<
   JogadorSelecionado[]
->([]);
+    >([]);
     const adversarioAtual =
   ref<Adversario | null>(null);
     //   const elencosUtilizados = ref<string[]>([]);
+  
+    type FaseCampanha =
+  | "oitavas"
+  | "quartas"
+  | "semi"
+  | "final"
+  | "campeao"
+  | "eliminado";
+  
+  const campanha = ref<
+  {
+    fase: FaseCampanha;
+    adversario: string;
+    placar: string;
+  }[]
+>([]);
 
-    const elencoAtual = ref<Elenco | null>(null);
+  const eventosVisiveis = ref<
+  {
+    minuto: number;
+    autor: string;
+    time: "corinthians" | "adversario";
+  }[]
+    >([]);
+  
+  const vagasDisponiveis =
+  ref<SlotCampo[]>([]);
 
-    const posicoes = computed(() => {
-        return formacoes[formacao.value];
-    });
+ function iniciarDraft() {
+  jogadoresSelecionados.value = [];
 
-    const posicaoAtual = computed(() => {
-        return posicoes.value[indicePosicaoAtual.value];
-    });
+  campanha.value = [];
 
-    const draftFinalizado = computed(() => {
-        return indicePosicaoAtual.value >= posicoes.value.length;
-    });
+  resumoPartida.value = null;
 
-    function iniciarDraft() {
-        jogadoresSelecionados.value = [];
+  resultadoUltimaPartida.value = null;
 
-        indicePosicaoAtual.value = 0;
+  eventosVisiveis.value = [];
 
-        sortearElenco();
+  placarAtual.value = {
+    golsTime: 0,
+    golsAdversario: 0,
+  };
+
+  adversarioAtual.value = null;
+
+  faseAtual.value = "draft";
+
+  poolJogadores.value = [
+    ...jogadoresHistoricos,
+  ];
+
+  vagasDisponiveis.value = [
+    ...formacoes[formacao.value],
+  ];
+
+  gerarOpcoesDraft();
+}
+  
+  const draftFinalizado =
+  computed(() => {
+    return (
+      vagasDisponiveis.value.length === 0
+    );
+  });
+
+  function obterSlotsCompativeis(
+  jogador: Jogador
+) {
+  return vagasDisponiveis.value.filter(
+    slot => {
+      const base =
+  slot
+    .replace("_E", "")
+    .replace("_D", "") as
+      Jogador["posicoes"][number];
+
+      return jogador.posicoes.includes(base);
     }
+  );
+}
 
-    function sortearElenco() {
-        const indice = Math.floor(
-            Math.random() * elencos.length
-        );
-
-        const elenco = elencos[indice];
-
-        if (!elenco) return;
-
-        elencoAtual.value = elenco;
-    }
-
-    
-
-const slotAtual = computed<SlotCampo | null>(() => {
-  return (
-    posicoes.value[indicePosicaoAtual.value] as SlotCampo
-  ) ?? null;
-});
-
-    function selecionarJogador(jogador: Jogador) {
-  const slot = slotAtual.value;
+    function selecionarJogador(
+  jogador: Jogador
+) {
+  const slot =
+    obterSlotsCompativeis(
+      jogador
+    )[0];
 
   if (!slot) {
     return;
@@ -89,60 +137,29 @@ const slotAtual = computed<SlotCampo | null>(() => {
     slot,
   });
 
-  indicePosicaoAtual.value++;
+  vagasDisponiveis.value =
+    vagasDisponiveis.value.filter(
+      vaga => vaga !== slot
+    );
+
+  poolJogadores.value =
+    poolJogadores.value.filter(
+      jogadorPool =>
+        !opcoesDraft.value.some(
+          opcao =>
+            opcao.id === jogadorPool.id
+        )
+    );
 
   if (!draftFinalizado.value) {
-    sortearElenco();
+    gerarOpcoesDraft();
   } else {
-    elencoAtual.value = null;
-
-    faseAtual.value = "oitavas";
+    faseAtual.value =
+      "oitavas";
 
     sortearAdversario();
   }
 }
-
-const slotParaPosicao = {
-  GOL: "GOL",
-
-  LD: "LD",
-  LE: "LE",
-
-  ZAG_E: "ZAG",
-  ZAG_D: "ZAG",
-
-  VOL: "VOL",
-
-  MC: "MC",
-  MC_E: "MC",
-  MC_D: "MC",
-
-  MD: "MD",
-  ME: "ME",
-
-  PD: "PD",
-  PE: "PE",
-
-  CA: "CA",
-  CA_E: "CA",
-  CA_D: "CA",
-} as const;
-
-    const jogadoresDisponiveis = computed(() => {
-  if (!elencoAtual.value) {
-    return [];
-  }
-
-  const posicaoReal =
-    slotParaPosicao[
-      posicaoAtual.value as keyof typeof slotParaPosicao
-    ];
-
-  return elencoAtual.value.jogadores.filter(
-    jogador =>
-      jogador.posicao === posicaoReal
-  );
-});
 
     const overallTime = computed(() => {
         if (!jogadoresSelecionados.value.length) {
@@ -175,6 +192,20 @@ const slotParaPosicao = {
         "eliminado"
     >("draft");
 
+  const nomesFases = {
+  
+  oitavas: "Oitavas de Final",
+
+  quartas: "Quartas de Final",
+
+  semi: "Semifinal",
+
+  final: "Final",
+
+  campeao: "Campeão",
+
+  eliminado: "Eliminado",
+} as const;
 
 
     function sortearAdversario() {
@@ -199,38 +230,183 @@ const slotParaPosicao = {
 
 const resultadoUltimaPartida =
   ref<string | null>(null);
+const placarAtual = ref({
+  golsTime: 0,
+  golsAdversario: 0,
+});
+async function jogarPartida() {
+  simulandoPartida.value = true;
 
-function jogarPartida() {
-  if (!adversarioAtual.value) {
-    return;
-  }
+  try {
+    await new Promise(
+      resolve =>
+        setTimeout(resolve, 1500)
+    );
 
-  const partida = gerarPlacar(
-    jogadoresSelecionados.value,
-    adversarioAtual.value
-  );
+    if (!adversarioAtual.value) {
+      return;
+    }
 
-  resumoPartida.value = partida;
+    aguardandoContinuacao.value = false;
 
-  if (!partida.venceu) {
-    faseAtual.value = "eliminado";
+    eventosVisiveis.value = [];
+
+    placarAtual.value = {
+      golsTime: 0,
+      golsAdversario: 0,
+    };
+
+    const nomeAdversario =
+      adversarioAtual.value.nome;
+
+    const partida = gerarPlacar(
+      jogadoresSelecionados.value,
+      adversarioAtual.value
+    );
+
+    resumoPartida.value = {
+      adversario: nomeAdversario,
+
+      golsTime: partida.golsTime,
+
+      golsAdversario:
+        partida.golsAdversario,
+
+      eventos: partida.eventos,
+    };
+
+    campanha.value.push({
+      fase:
+        faseAtual.value as FaseCampanha,
+
+      adversario: nomeAdversario,
+
+      placar:
+        `${partida.golsTime} x ${partida.golsAdversario}`,
+    });
 
     resultadoUltimaPartida.value =
-      "Eliminado";
+      partida.venceu
+        ? "Vitória"
+        : "Eliminado";
 
-    return;
-  }
+    modalResultadoAberta.value =
+      true;
 
-  resultadoUltimaPartida.value =
-    "Vitória";
+    for (const evento of partida.eventos) {
+  await new Promise(
+    resolve =>
+      setTimeout(resolve, 800)
+  );
 
-  avancarFase();
+  eventosVisiveis.value.push(
+    evento
+  );
 
-  if (faseAtual.value !== "campeao") {
-    sortearAdversario();
+  if (
+    evento.time === "corinthians"
+  ) {
+    placarAtual.value.golsTime++;
+  } else {
+    placarAtual.value
+      .golsAdversario++;
   }
 }
 
+    await new Promise(
+      resolve =>
+        setTimeout(resolve, 1000)
+    );
+
+    aguardandoContinuacao.value =
+      true;
+  } finally {
+    simulandoPartida.value = false;
+  }
+}
+
+  function continuarCampanha() {
+  aguardandoContinuacao.value =
+    false;
+
+  modalResultadoAberta.value =
+    false;
+
+  if (
+    resultadoUltimaPartida.value ===
+    "Eliminado"
+  ) {
+    faseAtual.value =
+      "eliminado";
+
+    return;
+  }
+
+  avancarFase();
+
+  if (
+    faseAtual.value !== "campeao"
+  ) {
+    sortearAdversario();
+  }
+  }
+
+  const proximaFaseLabel = computed(() => {
+  switch (faseAtual.value) {
+    case "oitavas":
+      return "Quartas de Final";
+
+    case "quartas":
+      return "Semifinal";
+
+    case "semi":
+      return "Final";
+
+    case "final":
+      return "Campeão";
+
+    default:
+      return "";
+  }
+});
+  
+  function reiniciarCampanha() {
+  modalResultadoAberta.value =
+    false;
+
+  aguardandoContinuacao.value =
+    false;
+
+  simulandoPartida.value =
+    false;
+
+  eventosVisiveis.value = [];
+
+  placarAtual.value = {
+    golsTime: 0,
+    golsAdversario: 0,
+  };
+
+  faseAtual.value = "draft";
+
+  adversarioAtual.value = null;
+
+  resultadoUltimaPartida.value =
+    null;
+
+  resumoPartida.value = null;
+
+  campanha.value = [];
+
+  jogadoresSelecionados.value = [];
+
+  poolJogadores.value = [];
+  
+
+    opcoesDraft.value = [];
+    vagasDisponiveis.value = [];
+}
+  
 function avancarFase() {
   switch (faseAtual.value) {
     case "oitavas":
@@ -249,6 +425,17 @@ function avancarFase() {
       faseAtual.value = "campeao";
       break;
   }
+  }
+  
+  function gerarOpcoesDraft() {
+  const embaralhados = [
+    ...poolJogadores.value,
+  ].sort(
+    () => Math.random() - 0.5
+  );
+
+  opcoesDraft.value =
+    embaralhados.slice(0, 11);
 }
 
 function definirFormacao(
@@ -260,30 +447,23 @@ function definirFormacao(
 
 
     return {
-        formacao,
-
-        indicePosicaoAtual,
+      formacao,
+      poolJogadores,
 
         jogadoresSelecionados,
 
         // elencosUtilizados,
 
-        elencoAtual,
-
-        posicoes,
-
-        posicaoAtual,
-
-        draftFinalizado,
+       opcoesDraft,
 
         iniciarDraft,
 
-        sortearElenco,
-
         selecionarJogador,
 
-        jogadoresDisponiveis, resumoPartida,
-        overallTime, definirFormacao,
-        faseAtual, sortearAdversario, adversarioAtual, resultadoUltimaPartida, jogarPartida, avancarFase
+        resumoPartida, simulandoPartida, nomesFases,
+        overallTime, definirFormacao, proximaFaseLabel,
+        faseAtual, campanha, sortearAdversario, vagasDisponiveis,
+obterSlotsCompativeis,
+draftFinalizado, placarAtual, adversarioAtual, eventosVisiveis, reiniciarCampanha, resultadoUltimaPartida, jogarPartida, aguardandoContinuacao, modalResultadoAberta ,avancarFase, continuarCampanha
     };
 });

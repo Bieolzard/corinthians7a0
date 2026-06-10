@@ -5,11 +5,48 @@ export function gerarPlacar(
   jogadores: JogadorSelecionado[],
   adversario: Adversario
 ) {
-  const golsTime =
-    Math.floor(Math.random() * 4);
+  if (!jogadores.length) {
+    return {
+      venceu: false,
+      golsTime: 0,
+      golsAdversario: 0,
+      eventos: [],
+    };
+  }
 
-  const golsAdversario =
-    Math.floor(Math.random() * 3);
+  const overallTime =
+  jogadores.reduce(
+    (acc, jogador) =>
+      acc + jogador.jogador.overall,
+    0
+    ) / jogadores.length;
+  const diferenca =
+  overallTime -
+    adversario.overall;
+  let chanceVitoria = 50;
+  chanceVitoria += diferenca * 2;
+  chanceVitoria = Math.max(
+  15,
+  Math.min(85, chanceVitoria)
+);
+  const venceu =
+  Math.random() * 100 <
+  chanceVitoria;
+  let golsTime = 0;
+  let golsAdversario = 0;
+  if (venceu) {
+  golsTime =
+    Math.floor(Math.random() * 4) + 1;
+
+  golsAdversario =
+    Math.floor(Math.random() * golsTime);
+} else {
+  golsAdversario =
+    Math.floor(Math.random() * 4) + 1;
+
+  golsTime =
+    Math.floor(Math.random() * golsAdversario);
+}
 
   const eventos: {
   minuto: number;
@@ -17,23 +54,27 @@ export function gerarPlacar(
   time: "corinthians" | "adversario";
 }[] = [];
   for (let i = 0; i < golsTime; i++) {
-    const jogador =
-      jogadores[
-        Math.floor(
-          Math.random() *
-          jogadores.length
-        )
-      ];
+  const jogador =
+    jogadores[
+      Math.floor(
+        Math.random() *
+        jogadores.length
+      )
+    ];
 
-    eventos.push({
-  minuto:
-    Math.floor(Math.random() * 90) + 1,
-
-  autor: jogador.jogador.nome,
-
-  time: "corinthians" as const,
-});
+  if (!jogador) {
+    continue;
   }
+
+  eventos.push({
+    minuto:
+      Math.floor(Math.random() * 90) + 1,
+
+    autor: jogador.jogador.nome,
+
+    time: "corinthians",
+  });
+}
 
   for (let i = 0; i < golsAdversario; i++) {
     eventos.push({
@@ -51,7 +92,7 @@ export function gerarPlacar(
   );
 
   return {
-    venceu: golsTime > golsAdversario,
+    venceu,
     golsTime,
     golsAdversario,
     eventos,

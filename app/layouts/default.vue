@@ -16,7 +16,7 @@
 
   display: grid;
 
-  grid-template-columns: 320px 1fr;
+  grid-template-columns: 400px 1fr;
 
   background: #111;
 

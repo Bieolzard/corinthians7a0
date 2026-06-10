@@ -14,7 +14,7 @@ export type Posicao =
 export interface Jogador {
   id: string;
   nome: string;
-  temporada: number;
-  posicao: Posicao;
+  temporada?: number;
+  posicoes: Posicao[];
   overall: number;
 }

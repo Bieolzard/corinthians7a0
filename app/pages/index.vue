@@ -1,11 +1,12 @@
 <template>
   <div>
-    <DraftSetup />
 
-    <DraftPlayerSelection />
+<LibertadoresPanel />
 
-    <FootballField />
+<FootballField />
 
-    <LibertadoresPanel />
+<!-- <CampaignHistory /> -->
+
+<MatchResultModal />
   </div>
 </template>
