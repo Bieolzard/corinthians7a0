@@ -389,7 +389,25 @@ const draft = useDraftStore();
 
   align-items: center;
 
+  justify-content: center;
+
   gap: 4px;
+
+  min-width: 0;
+
+  text-align: center;
+}
+
+.team span:first-child {
+  max-width: 120px;
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+
+  white-space: nowrap;
+
+  font-size: .9rem;
 }
 
 .team-name {
@@ -572,16 +590,16 @@ const draft = useDraftStore();
 }
 
 .scoreboard {
-  display: flex;
+  display: grid;
 
-  justify-content: center;
+  grid-template-columns:
+    minmax(0, 1fr)
+    auto
+    minmax(0, 1fr);
+
   align-items: center;
 
-  gap: clamp(
-    16px,
-    5vw,
-    80px
-  );
+  gap: 16px;
 
   margin: 48px 0;
 
@@ -598,6 +616,7 @@ const draft = useDraftStore();
   );
 
   border: 1px solid #222;
+
   border-radius: 20px;
 }
 
@@ -806,16 +825,21 @@ const draft = useDraftStore();
 }
 
 .x {
-  font-size: 2rem;
+  font-size: clamp(
+    1.5rem,
+    5vw,
+    2rem
+  );
 
-  color: #c9a227;
-
-  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .events {
+  flex: 1;
   width: 100%;
-
+max-height: 420px;
   max-width: 700px;
 
   margin: 32px auto 0;
@@ -825,6 +849,7 @@ const draft = useDraftStore();
   flex-direction: column;
 
   gap: 12px;
+  
 }
 
 .event {
@@ -1292,5 +1317,18 @@ backdrop-filter: blur(6px);
 
     max-width: 320px;
   }
+
+   .scoreboard {
+    grid-template-columns:
+      minmax(0, 1fr)
+      auto
+      minmax(0, 1fr);
+
+    gap: 12px;
+  }
+
+  .events {
+  max-height: 260px;
+}
 }
 </style>
