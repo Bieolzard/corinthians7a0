@@ -1298,10 +1298,18 @@ backdrop-filter: blur(6px);
 
    .event {
   flex-direction: column;
+padding: 8px 10px;
 
   justify-content: flex-start;
 
   gap: 6px;
+}
+.event-author {
+  font-size: .9rem;
+}
+.event-description {
+  font-size: .8rem;
+  line-height: 1.3;
 }
 
   .event-minute {
@@ -1327,8 +1335,5 @@ backdrop-filter: blur(6px);
     gap: 12px;
   }
 
-  .events {
-  max-height: 260px;
-}
 }
 </style>
