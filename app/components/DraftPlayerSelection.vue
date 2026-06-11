@@ -82,6 +82,26 @@ const draft = useDraftStore();
   border-radius: 16px;
 
   padding: 16px;
+  position: relative;
+}
+
+.player-selection::after {
+  content: "";
+
+  position: absolute;
+
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  height: 40px;
+
+  pointer-events: none;
+
+  background: linear-gradient(
+    transparent,
+    #111
+  );
 }
 
 .selection-header {
@@ -124,10 +144,45 @@ const draft = useDraftStore();
 
 .players-list {
   display: flex;
+  position: relative;
 
   flex-direction: column;
 
   gap: 8px;
+
+  max-height: 420px;
+
+  overflow-y: auto;
+
+  padding-right: 4px;
+}
+
+.players-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.players-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.players-list::-webkit-scrollbar-thumb {
+  background: rgba(
+    201,
+    162,
+    39,
+    .35
+  );
+
+  border-radius: 999px;
+}
+
+.players-list::-webkit-scrollbar-thumb:hover {
+  background: rgba(
+    201,
+    162,
+    39,
+    .65
+  );
 }
 
 .player-btn {

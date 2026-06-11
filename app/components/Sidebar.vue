@@ -13,7 +13,7 @@ const draft = useDraftStore();
   </div>
 
   <DraftSetup
-    v-if="draft.jogadoresSelecionados.length === 0"
+     v-if="!draft.draftIniciado"
   />
 
   <div class="section">
@@ -26,10 +26,10 @@ const draft = useDraftStore();
       <strong>{{ draft.formacao }}</strong>
     </div>
 
-    <div class="info">
+    <!-- <div class="info">
       <span>Posição</span>
       <strong>{{ draft.posicaoAtual }}</strong>
-    </div>
+    </div> -->
 
     <div class="info">
       <span>Jogadores</span>
@@ -39,7 +39,7 @@ const draft = useDraftStore();
     </div>
 
     <div class="info">
-      <span>OVR</span>
+      <span>Pontuação</span>
       <strong>{{ draft.overallTime }}</strong>
     </div>
   </div>
@@ -65,9 +65,9 @@ const draft = useDraftStore();
   gap: 16px;
 }
 
-.logo {
+/* .logo {
   margin-bottom: 8px;
-}
+} */
 
 .logo h1 {
   font-size: clamp(
@@ -92,7 +92,7 @@ const draft = useDraftStore();
 }
 
 h1 {
-  margin-bottom: 2rem;
+  margin-bottom: 0.5rem;
 
   font-size: 2rem;
 }

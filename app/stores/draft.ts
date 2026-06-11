@@ -18,6 +18,9 @@ export const useDraftStore = defineStore("draft", () => {
   const estadoPartida = ref<"idle" | "transicao" | "fim" | "simulando" | "resultado">(
     "idle",
   );
+  const draftIniciado = computed(() => {
+  return opcoesDraft.value.length > 0;
+});
   const resumoPartida = ref<{
     adversario: string;
     golsTime: number;
@@ -525,6 +528,7 @@ ultimoEvento.value = null;
     aguardandoContinuacao,
     avancarFase,
     continuarCampanha,
-    ultimoEvento
+    ultimoEvento,
+    draftIniciado
   };
 });
