@@ -97,9 +97,12 @@ CA_D: {
   position: relative;
 
   width: 100%;
+
   max-width: 760px;
 
-  height: 760px;
+  aspect-ratio: 1 / 1;
+
+  height: auto;
 
   margin: auto;
 

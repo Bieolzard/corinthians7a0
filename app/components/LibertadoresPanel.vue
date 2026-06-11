@@ -16,7 +16,7 @@ const draft = useDraftStore();
               {{ draft.nomesFases[draft.faseAtual] }}
             </h2>
 
-            <div class="phase-subtitle">Próximo desafio definido</div>
+            <div class="phase-subtitle">{{ draft.adversarioAtual?.descricao }}</div>
 
             <div class="versus-preview">
               <div class="preview-team">
@@ -498,7 +498,15 @@ const draft = useDraftStore();
 }
 
 .phase-name {
-  font-size: 4rem;
+  font-size: clamp(
+    2rem,
+    8vw,
+    4rem
+  );
+
+  line-height: 1.1;
+
+  word-break: break-word;
 
   font-weight: 800;
 
@@ -550,17 +558,15 @@ const draft = useDraftStore();
 }
 
 .match-screen {
-  width: min(900px, 90vw);
+  width: min(900px, 95vw);
 
-  min-height: 600px;
+  min-height: 100vh;
 
   display: flex;
-
   flex-direction: column;
-
   justify-content: center;
 
-  padding: 48px;
+  padding: clamp(16px, 4vw, 48px);
 
   color: white;
 }
@@ -569,26 +575,38 @@ const draft = useDraftStore();
   display: flex;
 
   justify-content: center;
-
   align-items: center;
 
-  gap: 80px;
+  gap: clamp(
+    16px,
+    5vw,
+    80px
+  );
 
   margin: 48px 0;
 
+  padding: clamp(
+    16px,
+    4vw,
+    40px
+  );
+
   background: linear-gradient(
     180deg,
-    rgba(255, 255, 255, 0.04),
-    rgba(255, 255, 255, 0.02)
+    rgba(255,255,255,.04),
+    rgba(255,255,255,.02)
   );
-  border: 1px solid #222;
-  padding: 40px;
 
+  border: 1px solid #222;
   border-radius: 20px;
 }
 
 .score {
-  font-size: 7rem;
+  font-size: clamp(
+    3.5rem,
+    12vw,
+    7rem
+  );
 
   font-weight: 900;
 
@@ -771,9 +789,11 @@ const draft = useDraftStore();
 } */
 
 .restart-btn {
-  background: #ff5f5f;
+  background: rgba(255, 255, 255, 0.04);
 
-  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+
+  color: #d4d4d4;
 }
 
 .continue-btn:hover,
@@ -864,7 +884,11 @@ const draft = useDraftStore();
 }
 
 .result-title {
-  font-size: 3rem;
+  font-size: clamp(
+    2rem,
+    8vw,
+    3rem
+  );
 
   font-weight: 800;
 
@@ -955,7 +979,11 @@ const draft = useDraftStore();
 .result-score {
   margin-top: 24px;
 
-  font-size: 2rem;
+  font-size: clamp(
+    1.2rem,
+    5vw,
+    2rem
+  );
 
   font-weight: 700;
 
@@ -1032,7 +1060,13 @@ backdrop-filter: blur(6px);
 }
 
 .goal-type {
-  font-size: 5rem;
+  font-size: clamp(
+    2rem,
+    10vw,
+    5rem
+  );
+
+  text-align: center;
 
   font-weight: 900;
 
@@ -1048,7 +1082,13 @@ backdrop-filter: blur(6px);
 }
 
 .goal-player {
-  font-size: 3rem;
+  font-size: clamp(
+    1.4rem,
+    6vw,
+    3rem
+  );
+
+  text-align: center;
 
   font-weight: 800;
 
@@ -1174,7 +1214,12 @@ backdrop-filter: blur(6px);
 }
 
 .whistle-score {
-  font-size: 4rem;
+  font-size: clamp(
+    1.8rem,
+    8vw,
+    4rem
+  );
+  text-align: center;
 
   font-weight: 800;
 
@@ -1213,5 +1258,39 @@ backdrop-filter: blur(6px);
       #c0c0c0,
       transparent
     );
+}
+
+@media (max-width: 768px) {
+  .versus-preview {
+    flex-direction: column;
+
+    gap: 16px;
+  }
+
+  .preview-vs {
+    font-size: 1.5rem;
+  }
+
+   .event {
+  flex-direction: column;
+
+  justify-content: flex-start;
+
+  gap: 6px;
+}
+
+  .event-minute {
+    min-width: auto;
+
+    font-size: 1rem;
+  }
+  .continue-btn,
+  .restart-btn {
+    width: 100%;
+
+    min-width: unset;
+
+    max-width: 320px;
+  }
 }
 </style>

@@ -28,7 +28,7 @@ export const jogadoresHistoricos = [
 { id: "michel-macedo", nome: "Michel Macedo", posicoes: ["LD"], overall: 73 },
 { id: "matheuzinho", nome: "Matheuzinho", posicoes: ["LD"], overall: 84 },
 { id: "diego-macedo", nome: "Diego Macedo", posicoes: ["LD"], overall: 70 },
-{ id: "fagner", nome: "Alessandro", posicoes: ["LD"], overall: 93 },
+{ id: "fagner", nome: "Fagner", posicoes: ["LD"], overall: 93 },
 { id: "zemaria", nome: "Zé Maria", posicoes: ["LD"], overall: 99 },
 { id: "welder", nome: "Welder", posicoes: ["LD"], overall: 72 },
 // LATERAIS ESQUERDOS
@@ -153,7 +153,6 @@ export const jogadoresHistoricos = [
 { id: "gustagol-ponta", nome: "Gustagol", posicoes: ["CA"], overall: 70 },
 { id: "pedro", nome: "Pedro", posicoes: ["PE"], overall: 74 },
 { id: "jorge-wagner", nome: "Jorge Wagner", posicoes: ["PE"], overall: 85 },
-{ id: "marcelinho", nome: "Marcelinho", posicoes: ["PE"], overall: 82 },
 { id: "gustavo-nery", nome: "Gustavo Nery", posicoes: ["ZAG"], overall: 84 },
 { id: "wesley", nome: "Wesley", posicoes: ["PE", "PD"], overall: 81 },
 { id: "kayke", nome: "Kayke", posicoes: ["PD"], overall: 80 },

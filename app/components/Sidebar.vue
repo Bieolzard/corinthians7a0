@@ -6,9 +6,9 @@ const draft = useDraftStore();
   <div class="sidebar-content">
   <div class="logo">
     <h1>
-      TIMÃO
+      SELE
       <br />
-      <span>7 A 0</span>
+      <span>TIMÃO</span>
     </h1>
   </div>
 
@@ -52,10 +52,16 @@ const draft = useDraftStore();
 
 <style scoped>
 .sidebar-content {
-  padding: 24px;
+  padding: clamp(
+    12px,
+    3vw,
+    24px
+  );
 
   display: flex;
+
   flex-direction: column;
+
   gap: 16px;
 }
 
@@ -64,14 +70,25 @@ const draft = useDraftStore();
 }
 
 .logo h1 {
-  font-size: 2rem;
-  line-height: 1;
-  font-weight: 800;
-  letter-spacing: -1px;
+  font-size: clamp(
+    2rem,
+    6vw,
+    3.5rem
+  );
+
+  line-height: .9;
+
+  font-weight: 900;
+
+  letter-spacing: -2px;
 }
 
 .logo span {
+  display: block;
+
   color: #c9a227;
+
+  font-size: .8em;
 }
 
 h1 {

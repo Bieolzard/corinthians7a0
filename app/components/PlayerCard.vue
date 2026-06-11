@@ -37,9 +37,9 @@ defineProps<{
 }
 
 .avatar {
-  width: 52px;
+  width: clamp(36px, 6vw, 52px);
 
-  height: 52px;
+  height: clamp(36px, 6vw, 52px);
 
   border-radius: 999px;
 
@@ -53,7 +53,11 @@ defineProps<{
 
   justify-content: center;
 
-  font-size: 1.2rem;
+  font-size: clamp(
+    0.85rem,
+    2vw,
+    1.2rem
+  );
 
   font-weight: 800;
 
@@ -64,13 +68,21 @@ defineProps<{
 }
 
 .nome {
-  max-width: 90px;
+  max-width: clamp(
+    50px,
+    12vw,
+    90px
+  );
 
   text-align: center;
 
   color: white;
 
-  font-size: 13px;
+  font-size: clamp(
+    9px,
+    1.8vw,
+    13px
+  );
 
   font-weight: 700;
 

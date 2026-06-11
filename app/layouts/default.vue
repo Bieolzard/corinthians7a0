@@ -16,7 +16,7 @@
 
   display: grid;
 
-  grid-template-columns: 400px 1fr;
+  grid-template-columns: 340px 1fr;
 
   background: #111;
 
@@ -31,5 +31,27 @@
 
 .content {
   padding: 2rem;
+}
+
+@media (max-width: 1024px) {
+  .app-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    border-right: none;
+
+    border-bottom: 1px solid #222;
+  }
+
+  .content {
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .content {
+    padding: .75rem;
+  }
 }
 </style>
